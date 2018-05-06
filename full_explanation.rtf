@@ -1,0 +1,49 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf400
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red164\green8\blue3;}
+{\*\expandedcolortbl;;\cssrgb\c71055\c10387\c0;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\b\fs24 \cf0 1.Personal: 
+\b0 \
+len(word)>2 & word not in stop_words & number of words in sentence >5\
+Sentence starts with \'93I\'94 or \'93my\'94 or \'91I\'92ve\'94, \'93I\'92m\'94 \
+\
+
+\b 2.Personal & common: 
+\b0 \
+len(word)>2 & word not in stop_words & number of words in sentence >5\
+Sentence starts with \'93I\'94 or \'93my\'94  and has at least one common words\
+\
+
+\b 3.General and Non mental health:
+\b0 \
+Everything that doesn\'92t fall into category 2.\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf2 DON\'94T CARE ABOUT
+\b0  len(word)>2 & word not in stop_words & number of words in sentence >5 \cf0 \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf0 4.General mental health: 
+\b0 \
+len(word)>2 & word not in stop_words & number of words in sentence >5\
+From category 3, comment has at least common word\
+\
+
+\b 5.Non mental health: 
+\b0 \
+Everything else that doesn\'92t fit into category 4\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf2 DON\'94T CARE ABOUT
+\b0  len(word)>2 & word not in stop_words & number of words in sentence >5 \
+\
+\
+\'97\'97\'97\'97\'97\'97\'97\'97\'97\'97\
+\
+None of this changes \'93posts\'94 page (602958 comments)\
+Personal&common + general and nonmental health = 602958 comments\
+}
