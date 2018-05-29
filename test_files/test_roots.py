@@ -7,7 +7,7 @@ from nltk.stem.snowball import SnowballStemmer
 import nltk
 
 EXCEL_IN = 'sample.xlsx'
-EXCEL_OUT = 'sample.xlsx'
+EXCEL_OUT = 'test.xlsx'
 
 obj = {
         'common': False,
@@ -17,19 +17,14 @@ obj = {
     }
 
 stop_words = stopwords.words('English')
-common = ['scary', 'sleep', 'head', 'prolactin', 'night', 'echoes', 'antipsychotic', 'whispering', 'alone', 'insane',
-          'dog bark', 'social', 'delusions', 'sad', 'television', 'tv', 'hallucinations', 'meds', 'symptoms',
-          'voices', 'medication', 'cognitive', 'running', 'thoughts', 'mg', 'scared', 'psychosis', 'psychotic',
-          'headaches','pace', 'pacing', 'voice', 'delusional', 'therapist', 'therapy', 'diagnosed', 'counselor', 'pychologist',
-          'pd', 'mri', 'chronic', 'zyprexa', 'schizophrenia', 'schizophrenic', 'voices', 'sz', 'daemon', 'fear',
-          'paranormal', 'pain', 'abilify', 'sedating', 'smell', 'demons', 'soul', 'nicotine', 'doctor', 'traumatized',
-          'telephone', 'ringing', 'agitation', 'light', 'stress', 'derealization', 'god', 'pdoc', 'dream', 'ra', 'problem', 'episodes',
-          'feel', 'danger', 'insomnia', 'anxiety', 'disorder', 'sza', 'smoke', 'weight', 'antidepressants', 'adhd', 'concerta', 'clozapine',
-          'dose', 'xanax', 'levitate', 'wonder', 'syndrome', 'ward', 'pill', 'depression', 'zopiclone', 'paranoia', 'normies', 'mood', 'depression',
-          'struggle', 'brain', 'daydream', 'schizoaffective', 'invega', 'provigil', 'geoden', 'seroquel', 'chlorpromazine', 'depixol', 'latuda', 'loxitane',
-          'trifluperazine', 'prolixin', 'haloperidol', 'clonidine', 'mentally']  # should be lowercase
-#chased, reality, urge,
-personal = ["i", "my", "i've", "i'm", "im", "ive", "me", "mine"]  # should be lowercase
+common = ['scary', 'sleep', 'my head', 'things', 'prolactin', 'night', 'echoes', 'antipsychotic', 'whispering', 'alone', 'insane',
+          'dog bark', 'social', 'delusions', 'sad', 'television', 'tv', 'hallucinations', 'time', 'meds', 'symptoms',
+          'voices', 'medication', 'cognitive', 'running', 'thoughts', 'mg', 'scared', 'psychosis',
+          'headaches','pace', 'pacing', 'voice', 'delusional', 'therapist', 'therapy', 'diagnosed',
+              'pd', 'mri', 'chronic', 'zyprexa', 'schizophrenia', 'voices', 'sz', 'smell', 'daemon',
+              'paranormal', 'pain', 'abilify', 'sedating', 'smell', 'demons', 'soul', 'nicotine', 'doctor', 'traumatized']  # should be lowercase
+
+personal = ["i", "my", "i've", "i'm", "im", "ive", "me"]  # should be lowercase
 stemmer = SnowballStemmer("english")
 nlp = spacy.load('en')
 
@@ -38,9 +33,7 @@ def filter_object(text):
     if not text:
         return obj
     else:
-        # match = re.sub('(?<=\D)[.,]|[.,](?=\D)', '', text)
-        match = re.split(r'\s+', text) #split by spaces
-        #print(match)
+        match = re.split(r'\s+', text)
     #check for start of sentence to identify personal comments
         if match[0].lower() in personal_roots:
             obj['personal'] = True
@@ -49,12 +42,12 @@ def filter_object(text):
         for word in match:
             if word.lower() in common_roots: #lower the word to check against
                 obj['common'] = True
-            if ("mg" or "thought" or 'dreams') in word:
+            if "mg" in word:
                 obj['common'] = True
-        #     if len(word) > 2 and (word not in stop_words):
-        #         count += 1
-        # if count > 2:
-        #     obj['long_count'] = True
+            if len(word) > 2 and (word not in stop_words):
+                count += 1
+        if count > 2:
+            obj['long_count'] = True
 
         return obj
 
@@ -65,23 +58,19 @@ def check_personal_comments(text):
     #     x = stemmer.stem(w)
     #     final_list_stemmed.append(x)
     # final_string_stemmed = ' '.join(final_list_stemmed)
-    if not text:
-        return obj
+    sent_text = nltk.sent_tokenize(text) #gives list of sentences
+    # print(sent_text)
+    for se in sent_text:
+        #print(type(se))
 
-    else:
-        sent_text = nltk.sent_tokenize(text) #gives list of sentences
-        # print(sent_text)
-        for se in sent_text:
-            #print(type(se))
-            # don't need to apply special character removal since it's handled by spacy interpreter
-            doc = nlp((se))
-            sentences = next(doc.sents)
-            # print(type(sentences))
-            for word in sentences:
-                if ((word.dep_ == 'nsubj' or 'nsubjpass' or 'poss') and (str(word).lower() in personal)):
-                    obj['personal_check'] = True
+        doc = nlp((se))
+        sentences = next(doc.sents)
+        # print(type(sentences))
+        for word in sentences:
+            if word.dep_ == 'nsubj' and (str(word) in personal):
+                obj['personal_check'] = True
 
-        return obj
+    return obj
 
 
 #simple copy function from one sheet to another row by row
@@ -91,16 +80,27 @@ def copy_to(from_row, to_row, sheet_name):
         xl[sheet_name].cell(to_row, i, v)
 
 #only copies 7th column after applying filter method
-# def copy_to_v2(from_row, to_row, sheet_name):
-#
-#     v = posts.cell(from_row, 7).value
-#     removed_words = filter(v)
-#     xl[sheet_name].cell(to_row, 7, removed_words)
+def copy_to_v2(from_row, to_row, sheet_name):
+
+    v = posts.cell(from_row, 7).value
+    removed_words = filter(v)
+    xl[sheet_name].cell(to_row, 7, removed_words)
 
 if __name__ == '__main__':    # Script starts here
 
     print("starting categorization using roots")
-
+    ################################################setup variables###########################################################
+    # stop_words = stopwords.words('English')
+    # common = ['scary', 'sleep', 'my head', 'things', 'prolactin', 'night', 'echoes', 'antipsychotic', 'whispering', 'alone', 'insane',
+    #       'dog bark', 'social', 'delusions', 'sad', 'television', 'tv', 'hallucinations', 'time', 'meds', 'symptoms',
+    #       'voices', 'medication', 'cognitive', 'running', 'thoughts', 'mg', 'scared', 'psychosis',
+    #       'headaches','pace', 'pacing', 'voice', 'delusional', 'therapist', 'therapy', 'diagnosed',
+    #           'pd', 'mri', 'chronic', 'zyprexa', 'schizophrenia', 'voices', 'sz', 'smell', 'daemon',
+    #           'paranormal', 'pain', 'abilify', 'sedating', 'smell']  # should be lowercase
+    #
+    # personal = ["i", "my", "i've", "i'm", "im", "ive", "me"]  # should be lowercase
+    # stemmer = SnowballStemmer("english")
+    # nlp = spacy.load('en')
 
     common_roots = []
     personal_roots =[]
@@ -138,9 +138,7 @@ if __name__ == '__main__':    # Script starts here
         text = root_posts.cell(rootSourceRow, 7).value # G column from Cleaned_Posts Page
         text2 = posts.cell(sourceRow, 7).value
         fo = filter_object(text)
-        fo = check_personal_comments(text2) #check ndubj on non-stemmed posts
-        print(fo)
-
+        fo = check_personal_comments(text2)
         # if ((fo['personal'] and fo['long_count']) or (fo['personal_check'] and fo['long_count'])):
         #     copy_to(sourceRow, personalRow, 'Personal')
         #     personalRow += 1
@@ -148,7 +146,7 @@ if __name__ == '__main__':    # Script starts here
         # if fo['personal_check'] and fo['long_count']:
         #     copy_to(sourceRow, personalRow, 'Personal')
         #     personalRow += 1
-        if ((fo['personal'] and fo['common']) or (fo['personal_check'] and fo['common'])):
+        if ((fo['personal'] and fo['long_count'] and fo['common']) or (fo['personal_check'] and fo['long_count'] and fo['common'])):
             copy_to(sourceRow, commonRow, 'Personal & Common')
             commonRow += 1
             print("Personal/Common - processsed" + " " +str(sourceRow))
