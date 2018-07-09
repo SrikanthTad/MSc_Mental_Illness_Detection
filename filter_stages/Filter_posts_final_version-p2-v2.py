@@ -14,7 +14,7 @@ obj = {
     }
 
 stop_words = stopwords.words('English')
-common = ['scary', 'sleep', 'head', 'prolactin', 'night', 'echoes', 'antipsychotic', 'whispering', 'alone', 'insane',
+common = ['scary', 'sleep','hippocampus', 'head', 'prolactin', 'night', 'echoes', 'antipsychotic', 'whispering', 'alone', 'insane',
           'dog bark', 'social', 'delusions', 'sad', 'television', 'tv', 'hallucinations', 'meds', 'symptoms',
           'voices', 'medication', 'cognitive', 'running', 'thoughts', 'mg', 'scared', 'psychosis', 'psychotic',
           'headaches','pace', 'pacing', 'voice', 'delusional', 'therapist', 'therapy', 'diagnosed', 'counselor', 'pychologist',
@@ -24,7 +24,15 @@ common = ['scary', 'sleep', 'head', 'prolactin', 'night', 'echoes', 'antipsychot
           'feel', 'danger', 'insomnia', 'anxiety', 'disorder', 'sza', 'smoke', 'weight', 'antidepressants', 'adhd', 'concerta', 'clozapine',
           'dose', 'xanax', 'levitate', 'wonder', 'syndrome', 'ward', 'pill', 'depression', 'zopiclone', 'paranoia', 'normies', 'mood', 'depression',
           'struggle', 'brain', 'daydream', 'schizoaffective', 'invega', 'provigil', 'geoden', 'seroquel', 'chlorpromazine', 'depixol', 'latuda', 'loxitane',
-          'trifluperazine', 'prolixin', 'haloperidol', 'clonidine', 'mentally']  # should be lowercase
+          'trifluperazine', 'prolixin', 'haloperidol', 'clonidine', 'mentally', 'stigma', 'schizos', 'paliperidone', 'selfmedicate', 'tomography']  # should be lowercase
+common_bigrams = ['mentally ill', 'severe mental', 'my mental', 'the paranoia', 'health care', 'heard voices', 'for anxiety', 'life was', 'depressed and', 'medication for'
+                  'your psychiatrist', 'my meds', 'side effects', 'the meds', 'meds I', 'with schizophrenia', 'on meds', 'my therapist', 'paliperidone palmitate', 'psychosis FEP',
+                  'brain nicotine', 'battery mccb', 'smoking schizophrenia', 'cerebral diabetics', 'diabetic brain', 'by antipsychotic', '20 mg', 'schizophrenia sz',
+                  'cognitive remediation', 'paranoid schizophrenia', 'bipolar depression', 'auditory hallucinations', 'negative psychotic', 'increased pain', 'medication refractory'
+                  , 'anger control', 'sleep patters', 'anxiety disorder', 'cbd meds', 'distress tolerance', 'symptom remission', 'prolactin levels', 'of risperidone',
+                  'schizophrenia you', 'atypical antipsychotics', 'hippocampus and', 'lose weight', 'antipsychotic agents', 'first episode', 'firstepisode', 'selfmedicate symptoms',
+                  'brain waves', 'positron emission', 'drug that', 'to antipsychotics', 'psychotic episode', 'dosages of', 'including schizophrenia', 'treatment approaches',
+                  'psychiatric symptoms', 'spectrum disorders', 'severe mental', '95 ci', 'of aripiprazole' 'of clozapine']
 
 personal = ["i", "my", "i've", "i'm", "im", "ive", "me", "mine"]  # should be lowercase
 stemmer = SnowballStemmer("english")
@@ -42,7 +50,9 @@ def filter_object(text):
         # if match[0].lower() in personal_roots:
         #     obj['personal'] = True
         #count = 0
-
+        for v in common_roots_bigrams:
+            if v.lower() in text.lower():
+                obj['common'] = True
         for word in match:
             if word.lower() in common_roots: #lower the word to check against
                 obj['common'] = True
@@ -118,12 +128,14 @@ if __name__ == '__main__':    # Script starts here
     ################################################setup variables###########################################################
     common_roots = []
     personal_roots =[]
-
+    common_roots_bigrams = []
 
     for c in common:
         common_roots.append((stemmer.stem(c)))
     for p in personal:
         personal_roots.append(stemmer.stem(p))
+    for k in common_bigrams:
+        common_roots_bigrams.append((stemmer.stem(k)))
 
     xl = openpyxl.load_workbook(EXCEL_IN)
     posts = xl['Non and General']

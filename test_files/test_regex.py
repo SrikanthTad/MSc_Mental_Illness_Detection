@@ -106,7 +106,7 @@ def check_personal_comments(text):
     #     final_list_stemmed.append(x)
     # final_string_stemmed = ' '.join(final_list_stemmed)
     sent_text = nltk.sent_tokenize(text) #gives list of sentences
-    # print(sent_text)
+    print(sent_text)
     for se in sent_text:
         #print(type(se))
 
